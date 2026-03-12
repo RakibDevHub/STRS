@@ -5,6 +5,7 @@ A comprehensive tourism platform that helps users plan trips, book accommodation
 ## 🚀 Features
 
 ### User Features
+
 - 🔐 **Authentication** - Register/Login with JWT
 - 🎯 **Trip Planning** - Plan trips based on budget, duration, and interests
 - 🏝️ **Destination Discovery** - Browse destinations with filters and search
@@ -17,6 +18,7 @@ A comprehensive tourism platform that helps users plan trips, book accommodation
 - ⭐ **Ratings & Reviews** - Rate destinations and hotels
 
 ### Admin Features
+
 - 📊 **Dashboard** - Overview of platform statistics
 - 👥 **User Management** - Manage user accounts and roles
 - 🏝️ **Destination Management** - CRUD operations for destinations
@@ -31,12 +33,14 @@ A comprehensive tourism platform that helps users plan trips, book accommodation
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - React.js
 - Tailwind CSS
 - React Router DOM
 - Chart.js (for analytics)
 
 ### Backend
+
 - Node.js
 - Oracle Database
 - JWT Authentication
@@ -51,6 +55,8 @@ A comprehensive tourism platform that helps users plan trips, book accommodation
 ## 🔧 Installation
 
 1. Clone the repository
+
 ```bash
-git clone https://github.com/yourusername/smart-tourism-recommendation.git
+git clone https://github.com/rakibdevhub/smart-tourism-recommendation.git
 cd smart-tourism-recommendation
+```
