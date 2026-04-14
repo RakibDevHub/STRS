@@ -870,5 +870,56 @@ module.exports = async (req, res, parsedUrl, path, helpers) => {
     }
   }
 
+  // GET STATS FOR HOME PAGE
+  else if (path === "/api/stats" && req.method === "GET") {
+    let connection;
+    try {
+      connection = await getConnection();
+
+      // Get total destinations count
+      const destResult = await connection.execute(
+        `SELECT COUNT(*) as total FROM destinations`,
+      );
+      const totalDestinations = destResult.rows[0][0];
+
+      // Get total hotels count
+      const hotelResult = await connection.execute(
+        `SELECT COUNT(*) as total FROM hotels`,
+      );
+      const totalHotels = hotelResult.rows[0][0];
+
+      // Get total travelers (users with role 'traveler')
+      const travelerResult = await connection.execute(
+        `SELECT COUNT(*) as total FROM users WHERE user_role = 'traveler' OR user_role IS NULL`,
+      );
+      const totalTravelers = travelerResult.rows[0][0];
+
+      // Get total bookings count for additional stat
+      const bookingResult = await connection.execute(
+        `SELECT COUNT(*) as total FROM bookings WHERE status = 'confirmed'`,
+      );
+      const totalBookings = bookingResult.rows[0][0];
+
+      sendJSON(res, 200, {
+        success: true,
+        stats: {
+          destinations: totalDestinations,
+          hotels: totalHotels,
+          travelers: totalTravelers,
+          bookings: totalBookings,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      sendJSON(res, 500, {
+        success: false,
+        error: "Error fetching stats",
+      });
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
+
   return false;
 };

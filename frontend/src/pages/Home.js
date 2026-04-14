@@ -6,16 +6,22 @@ import Footer from "../components/Footer";
 const Home = ({ user, onLogout }) => {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    destinations: 0,
+    hotels: 0,
+    travelers: 0,
+    bookings: 0,
+  });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [heroImages, setHeroImages] = useState([]);
 
   useEffect(() => {
     fetchDestinations();
+    fetchStats();
   }, []);
 
   useEffect(() => {
     if (destinations.length > 0) {
-      // Extract images for hero slideshow
       const images = destinations
         .filter((dest) => dest.image)
         .map((dest) => ({
@@ -28,14 +34,11 @@ const Home = ({ user, onLogout }) => {
     }
   }, [destinations]);
 
-  // Auto-slide effect for hero section
   useEffect(() => {
     if (heroImages.length === 0) return;
-
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
@@ -44,12 +47,24 @@ const Home = ({ user, onLogout }) => {
       const res = await fetch("http://localhost:5000/api/destinations");
       const data = await res.json();
       if (data.success) {
-        setDestinations(data.destinations.slice(0, 8));
+        setDestinations(data.destinations);
       }
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/stats");
+      const data = await res.json();
+      if (data.success) {
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error);
     }
   };
 
@@ -72,8 +87,14 @@ const Home = ({ user, onLogout }) => {
     { icon: "🎯", title: "Personalized", desc: "Based on your interests" },
   ];
 
-  // Get images for gallery (excluding the first few used in hero)
-  const galleryImages = destinations.slice(3, 11).filter((dest) => dest.image);
+  const galleryImages = destinations
+    .slice(3, 11)
+    .filter((dest) => dest.image && dest.image.trim() !== "")
+    .map((dest) => ({
+      url: `http://localhost:5000${dest.image}`,
+      name: dest.name,
+      location: dest.location,
+    }));
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -258,8 +279,7 @@ const Home = ({ user, onLogout }) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div className="relative h-96 rounded-xl overflow-hidden group cursor-pointer">
                   <img
-                    src={`http://localhost:5000${galleryImages[0].image}`}
-                    // src={galleryImages[0]?.url}
+                    src={galleryImages[0]?.url}
                     alt={galleryImages[0]?.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
                   />
@@ -282,8 +302,7 @@ const Home = ({ user, onLogout }) => {
                       className="relative h-96 rounded-xl overflow-hidden group cursor-pointer"
                     >
                       <img
-                        // src={image.url}
-                        src={`http://localhost:5000${image.image}`}
+                        src={image.url}
                         alt={image.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
                       />
@@ -306,7 +325,7 @@ const Home = ({ user, onLogout }) => {
                     className="relative h-64 rounded-xl overflow-hidden group cursor-pointer"
                   >
                     <img
-                      src={`http://localhost:5000${image.image}`}
+                      src={image.url}
                       alt={image.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                     />
@@ -319,6 +338,29 @@ const Home = ({ user, onLogout }) => {
                   </div>
                 ))}
               </div>
+
+              {/* View More Button */}
+              <div className="text-center mt-8">
+                <Link
+                  to="/destinations"
+                  className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold transition-all"
+                >
+                  <span>View All Destinations</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </Link>
+              </div>
             </>
           ) : (
             <div className="text-center py-12 bg-white rounded-xl">
@@ -328,20 +370,22 @@ const Home = ({ user, onLogout }) => {
         </div>
       </div>
 
-      {/* Stats Section*/}
+      {/* STATS Section */}
       <div className="bg-indigo-600 py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 text-center text-white">
             <div>
-              <div className="text-4xl font-bold mb-2">50+</div>
+              <div className="text-4xl font-bold mb-2">
+                {stats.destinations}+
+              </div>
               <p className="text-indigo-100">Destinations</p>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">200+</div>
+              <div className="text-4xl font-bold mb-2">{stats.hotels}+</div>
               <p className="text-indigo-100">Hotels</p>
             </div>
             <div>
-              <div className="text-4xl font-bold mb-2">1000+</div>
+              <div className="text-4xl font-bold mb-2">{stats.travelers}+</div>
               <p className="text-indigo-100">Happy Travelers</p>
             </div>
             <div>
