@@ -265,7 +265,7 @@ const server = http.createServer(async (req, res) => {
   // Auth routes
   if (await authRoutes(req, res, parsedUrl, path, {
     getConnection, hashPassword, verifyPassword, generateToken, verifyToken,
-    getRequestBody, sendJSON, parseMultipart, verifyAdmin
+    getRequestBody, sendJSON, parseMultipart, verifyAdmin, oracledb
   })) return;
 
   // Public routes

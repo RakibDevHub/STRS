@@ -10,6 +10,7 @@ module.exports = async (req, res, parsedUrl, path, helpers) => {
     parseMultipart,
     pathModule,
     fs,
+    oracledb,
   } = helpers;
 
   // REGISTER
